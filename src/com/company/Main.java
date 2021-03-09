@@ -4,13 +4,12 @@ import com.dropbox.core.DbxDownloader;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.DbxClientV2;
-import com.dropbox.core.v2.files.FileMetadata;
-import com.dropbox.core.v2.files.ListFolderResult;
-import com.dropbox.core.v2.files.Metadata;
+import com.dropbox.core.v2.files.*;
 import com.dropbox.core.v2.users.DbxUserUsersRequests;
 import com.dropbox.core.v2.users.FullAccount;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -19,8 +18,48 @@ public class Main {
 
     public static void main(String args[]) throws FileNotFoundException, DbxException, IOException {
         Main app = new Main();
-        app.gettingFiles();
+        app.getTemporaryLink();
 
+
+    }
+
+    public void getTemporaryLink() throws DbxException {
+      /*  ArrayList<String> listData = new ArrayList<>();
+        listData.add("/pompom.jpg");
+        listData.add("/1600990055141.jpg");*/
+        //GET TEMPORARY LINK IS ONE FILE RETURN ONLY NOT FOR LIST DATA.
+        DbxRequestConfig config;
+        config = new DbxRequestConfig("dropbox/spring-boot-file-upload");
+        DbxClientV2 client;
+        client = new DbxClientV2(config, ACCESS_TOKEN);
+        FullAccount account;
+        DbxUserUsersRequests r1 = client.users();
+        account = r1.getCurrentAccount();
+        System.out.println(account.getName().getDisplayName());
+        System.out.println("waiting...");
+
+        GetTemporaryLinkResult downloader = client.files().getTemporaryLink("/1600990055141.jpg");
+        System.out.println("link: \n" + downloader.getLink());
+    }
+    public void getThumbnailBatch() throws DbxException {
+
+
+          ArrayList<ThumbnailArg> listData = new ArrayList<>();
+/*        listData.add("/pompom.jpg");
+        listData.add("/1600990055141.jpg");*/
+        //GET TEMPORARY LINK IS ONE FILE RETURN ONLY NOT FOR LIST DATA.
+        DbxRequestConfig config;
+        config = new DbxRequestConfig("dropbox/spring-boot-file-upload");
+        DbxClientV2 client;
+        client = new DbxClientV2(config, ACCESS_TOKEN);
+        FullAccount account;
+        DbxUserUsersRequests r1 = client.users();
+        account = r1.getCurrentAccount();
+        System.out.println(account.getName().getDisplayName());
+        System.out.println("waiting...");
+
+        GetThumbnailBatchResult downloader = client.files().getThumbnailBatch(listData);
+        System.out.println("link: \n" + downloader.getEntries());
 
     }
 
@@ -41,6 +80,7 @@ public class Main {
             account = r1.getCurrentAccount();
             System.out.println(account.getName().getDisplayName());
 
+            System.out.println("temporary te" + client.files().getTemporaryLink(""));
             // Get files and folder metadata from Dropbox root directory
             ListFolderResult result = client.files().listFolder("");
             while (true) {
@@ -54,6 +94,7 @@ public class Main {
                 }
 
                 result = client.files().listFolderContinue(result.getCursor());
+
             }
             System.out.println("Which one do you want to download? example: < /john.png >");
             data = input.nextLine();
